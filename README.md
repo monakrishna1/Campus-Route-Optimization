@@ -87,20 +87,6 @@ http://127.0.0.1:5000
 4. View the shortest route on the map.
 5. Check the total distance and path information.
 
-## Applications
-- College campuses
-- Universities
-- Corporate campuses
-- Hospitals
-- Industrial parks
-- Smart city navigation systems
-
-## Future Enhancements
-- Real-time traffic information.
-- Multiple transportation modes.
-- Estimated travel time calculation.
-- GPS integration.
-- Mobile application support.
 
 ## Contributors
 - Mona K
