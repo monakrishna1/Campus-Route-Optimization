@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Leaflet Map</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <style>
+        #map {
+            height: 400px;
+        }
+    </style>
+</head>
+<body>
+    <div id="map"></div>
+
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <script>
+        var map = L.map('map').setView([{{ path_coordinates[0][0] }}, {{ path_coordinates[0][1] }}], 15);
+
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '© OpenStreetMap contributors'
+        }).addTo(map);
+
+        var coordinates = {{ path_coordinates | tojson }};
+        var nodeNames = {{node_name | tojson }};
+
+        var polyline = L.polyline(coordinates, {color: 'blue'}).addTo(map);
+
+        for (var i = 0; i < coordinates.length; i++) {
+            var marker = L.marker(coordinates[i]).addTo(map);
+            marker.bindPopup(nodeNames[i]).openPopup();
+        }
+    </script>
+</body>
+</html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Input</title>
+</head>
+<body>
+    <form id="userInputForm">
+        <label for="userInput">Enter a string:</label>
+        <input type="text" id="userInput" name="userInput" required>
+        <button type="button" onclick="submitForm()">Submit</button>
+    </form>
+
+    <div id="result"></div>
+
+    <script>
+        function submitForm() {
+            var userInput = document.getElementById("userInput").value;
+
+            fetch('/get_user_input', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    'userInput': userInput,
+                }),
+            })
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById("result").innerHTML = data.result;
+            })
+            .catch(error => console.error('Error:', error));
+        }
+    </script>
+</body>
+</html>

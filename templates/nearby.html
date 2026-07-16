@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shortest Path Finder</title>
+    <!-- Add Leaflet Routing Machine CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine/dist/leaflet-routing-machine.css" />
+    <!-- Add Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <link rel="icon" href="/favicon.ico" type="image/x-icon">
+    <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
+    <link rel="stylesheet" href="{{ url_for('static', filename='menu_bar.css') }}">
+
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f8f8f8;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        h1 {
+            color: #333;
+            margin-top: 20px;
+        }
+        #map-buttons {
+    position: absolute;
+    top: 111px;
+    left: 51px;
+    z-index: 1003;
+    display: flex;
+    align-items: center; /* Align items vertically in the center */
+}
+
+#map-buttons input[type="text"] {
+    flex-grow: 1;
+    flex-shrink: 0;
+    flex-basis: 10%; /* Adjust the value to make the text box larger or smaller */
+    margin-right: 15px;
+    padding: 10px;
+    box-sizing: border-box;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 14px;
+}
+
+
+
+#map-buttons button {
+    margin-left: 15px;
+    width: 120px; /* Set a fixed width for all buttons */
+    padding: 10px 1px;
+    font-size: 12px;
+    cursor: pointer;
+    background-color: #4caf50;
+    color: #fff;
+    border: none;
+    border-radius: 20px;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+#map-buttons button:hover {
+    background-color: #45a049;
+    transform: scale(1.05);
+}
+
+
+
+
+        #slider-left {
+            position: fixed;
+            top: 0;
+            width: 0;
+            height: 100%;
+            left: 0;
+            overflow: hidden;
+            background-color: #f1f1f1;
+            transition: width 0.5s ease-in-out;
+            z-index: 1001;
+        }
+
+        .slider-content {
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        .slider-container-left.active {
+            width: 200px;
+        }
+
+        .toggle-left {
+            position: fixed;
+            top: 20px;
+            cursor: pointer;
+            font-size: 24px;
+            left: 20px;
+            z-index: 1002;
+        }
+
+        .button-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+        }
+
+        .button {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            box-sizing: border-box;
+            font-size: 14px;
+        }
+
+        #map {
+            height: 600px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            margin-top: 20px;
+        }
+
+        #inputBoxContainer {
+            display: none;
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background-color: rgba(255, 255, 255, 0.9);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        #inputBox {
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            max-width: 800px;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        #nearbyList {
+            list-style-type: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        #nearbyList li {
+            cursor: pointer;
+            margin-bottom: 10px;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            background-color: #f9f9f9;
+            transition: background-color 0.3s ease;
+        }
+
+        #nearbyList li:hover {
+            background-color: #e0e0e0;
+        }
+
+        #pathForm {
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            margin-bottom: 20px;
+            max-width: 800px;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #555;
+        }
+
+        input,
+        select,
+        button {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            box-sizing: border-box;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+
+        button {
+            background-color: #4caf50;
+            color: #fff;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Shortest Path Finder</h1>
+    <div id="map"></div>
+
+    <!-- Buttons Container -->
+<!-- Buttons Container -->
+        <!-- <div id="map-buttons">
+            <input type="text" placeholder="Enter Your Location">
+            <button id="button1">Exit</button>
+            <button id="button2">Parking</button>
+            <button id="button3">Fountain</button>
+            <button id="button4">Guest House</button>
+            <button id="button5">Ground</button>
+            <button id="button6">Auditorium</button>
+            <button id="button7">Library</button>
+            <button id="button8">Mess</button>
+            <button id="button9">Health center</button>
+            <button id="button10">Hostel</button>
+        </div> -->
+
+    <div class="toggle-left" onclick="toggleSlider('left')">☰</div>
+
+    <div class="slider-container-left active" id="slider-left">
+        <div class="slider-content">
+            <div class="button-container">
+                <button class="button" onclick="handleButtonClick(1, 'left')">Button 1</button>
+                <button class="button" onclick="handleButtonClick(2, 'left')">Button 2</button>
+                <button class="button" onclick="handleButtonClick(3, 'left')">Button 3</button>
+            </div>
+        </div>
+    </div>
+    <!-- Input box container -->
+    <div id="inputBoxContainer">
+        <div id="inputBox">
+            <h2>Nearby Locations</h2>
+            <ul id="nearbyList"></ul>
+            <form id="pathForm">
+                <label for="startLocation">Start Location:</label>
+                <input type="text" id="startLocation" name="startLocation" required>
+
+                <label for="endLocation">End Location:</label>
+                <select id="endLocation" name="endLocation" required>
+                    <option value="2">Two Wheeler Parking End Turning</option>
+                    <option value="3">Fountain</option>
+                    <option value="4">Car Parking End Turning</option>
+                    <option value="5">Guesthouse</option>
+                </select>
+
+                <button type="button" id="findPathButton">Find Shortest Path</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Leaflet Map Container -->
+    <div id="map"></div>
+
+    <!-- Add Leaflet JS -->
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <!-- Add axios -->
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <!-- Add Leaflet Routing Machine JS -->
+    <script src="https://unpkg.com/leaflet-routing-machine/dist/leaflet-routing-machine.js"></script>
+    <!-- Add your JavaScript file -->
+    <script src="static/project1.js"></script>
+
+    <script>
+        function toggleSlider(side) {
+            const sliderLeft = document.getElementById('slider-left');
+            sliderLeft.classList.toggle('active');
+        }
+
+        function handleButtonClick(buttonNumber, side) {
+            alert("Button " + buttonNumber + " clicked in " + side + " panel!");
+            // Add your logic here for handling button clicks
+        }
+
+        document.addEventListener('DOMContentLoaded', function () {
+        const sliderLeft = document.getElementById('slider-left');
+        const buttonContainer = document.querySelector('.slider-container-left .button-container');
+
+        // Initially hide the buttons
+        buttonContainer.style.display = 'none';
+
+        function toggleSlider() {
+            sliderLeft.classList.toggle('active');
+
+            // Check if the slider is now active
+            const isActive = sliderLeft.classList.contains('active');
+
+            // Hide or show the buttons based on the active state
+            buttonContainer.style.display = isActive ? 'flex' : 'none';
+        }
+
+        function handleButtonClick(buttonNumber, side) {
+            alert("Button " + buttonNumber + " clicked in " + side + " panel!");
+            // Add your logic here for handling button clicks
+        }
+
+        // Attach event listener to the menu bar toggle
+        document.querySelector('.toggle-left').addEventListener('click', function () {
+            toggleSlider();
+        });
+
+        // Attach event listeners to the buttons
+        document.querySelectorAll('.button-container button').forEach(function (button, index) {
+            button.addEventListener('click', function () {
+                handleButtonClick(index + 1, 'left');
+            });
+        });
+
+        const node_name = {
+            '1': 'main gate',
+                '2': 'two wheeler parking end turning',
+                '3': 'fountain',
+                '4': 'car parking end turning',
+                '5': 'guesthouse',
+                '6': 'high voltage',
+                '7': 'transportation engineering',
+                '33': 'transporation engineering turning',
+                '26': 'engineering design division',
+                '27': 'tnea counselling',
+                '28': 'institute of ocean technology',
+                '29': 'tamilnadu technology hub',
+                '8': 'red building',
+                '9': 'institute of remote sensing',
+                '10': 'vivekanandh auditorium',
+                '11': 'department of applied chemistry',
+                '12': 'alumni associate on ceg',
+                '30': 'ceg ground',
+                '13': 'ladies hostel',
+                '15': 'senior mess',
+                '16': 'mega mess',
+                '17': 'pg mess',
+                '18': 'industry collaboration',
+                '19': 'health center',
+                '20': 'ceg hostel turning (right)',
+                '21': 'ceg hostel',
+                '22': 'anna centenary library',
+                '23': 'atm turning',
+                '24': 'anna central library',
+                '25': 'anna incubator',
+                '31': 'tnea counselling turn1',
+                '32': 'tnea counselling turn2',
+                '34': 'madras school of economics'
+        };
+
+        // Function to toggle the visibility of the input box
+        function toggleInputBoxVisibility(visible) {
+            console.log('Toggling input box visibility:', visible);
+            var inputBoxContainer = document.getElementById('inputBoxContainer');
+            inputBoxContainer.style.display = visible ? 'flex' : 'none';
+        }
+
+        // Attach event listener to the Find Shortest Path button
+        document.getElementById('findPathButton').addEventListener('click', function () {
+            // Call function to toggle visibility of the input box
+            toggleInputBoxVisibility(false);
+        });
+
+        // Example: Call function to toggle visibility when input receives focus
+        document.getElementById('startLocation').addEventListener('focus', function () {
+            // Call function to toggle visibility of the input box
+            toggleInputBoxVisibility(true);
+        });
+    });
+    </script>
+
+</body>
+
+</html>
