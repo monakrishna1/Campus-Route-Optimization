@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shortest Path Finder</title>
+    <!-- Add Leaflet Routing Machine CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine/dist/leaflet-routing-machine.css" />
+    <!-- Add Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <style>
+        #map {
+            height: 400px;
+        }
+
+        #nearbyLocations {
+            margin-bottom: 20px;
+        }
+
+        #nearbyList {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        #nearbyList li {
+            cursor: pointer;
+            margin-bottom: 5px;
+            padding: 5px;
+            border: 1px solid #ccc;
+            background-color: #f9f9f9;
+        }
+    </style>
+    <script>
+ var node_name = {
+                '1':'main gate',
+    '2':'two wheeler parking end turning',
+    '3':'fountain',
+    '4':'car parking end turning',
+    '5':'guesthouse',
+    '6':'high voltage',
+    '7':'transportation engineering',
+    '33':'transporation engineering turning',
+    '26':'engineering design division',
+    '27':'tnea counselling',
+    '28':'institute of ocean technology',
+    '29':'tamilnadu technology hub',
+    '8':'red building',
+    '9':'institue of remote sensing',
+    '10':'vivekanandh audorium',
+    '11':'department of applied chemistry',
+    '12':'alumni associate on ceg',
+    '30':'ceg ground',
+    '13':'ladies hostel',
+    '15':'senior mess',
+    '16':'mega mess',
+    '17':'pg mess',
+    '18':'industry collaboration',
+    '19':'health center',
+    '20':'ceg hostel turning (right)',
+    '21':'ceg hostel',
+    '22':'anna centenary library',
+    '23':'atm turning',
+    '24':'anna central library',
+    '25':'anna incubator',
+    '31':'tnea counselling turn1',
+    '32':'tnea counselling turn2',
+    '34':'madras school of economics'
+            };
+    </script>
+</head>
+<body>
+    <h1>Shortest Path Finder</h1>
+
+    <!-- Display nearby locations at the top of the page -->
+    <div id="nearbyLocations">
+        <h2>Nearby Locations</h2>
+        <ul id="nearbyList"></ul>
+    </div>
+
+    <form id="pathForm">
+        <label for="startLocation">Start Location:</label>
+        <input type="text" id="startLocation" name="startLocation" required>
+
+        <label for="endLocation">End Location:</label>
+        <select id="endLocation" name="endLocation" required>
+            <option value="2">Two Wheeler Parking End Turning</option>
+            <option value="3">Fountain</option>
+            <option value="4">Car Parking End Turning</option>
+            <option value="5">Guesthouse</option>
+        </select>
+
+        <button type="button" id="findPathButton">Find Shortest Path</button>
+    </form>
+    
+    <!-- Leaflet Map Container -->
+    <div id="map"></div>
+
+    <!-- Add Leaflet JS -->
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <!-- Add axios -->
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <!-- Add Leaflet Routing Machine JS -->
+    <script src="https://unpkg.com/leaflet-routing-machine/dist/leaflet-routing-machine.js"></script>
+    <!-- Add your JavaScript file -->
+    <script src="{{ url_for('static', filename='project1.js') }}"></script>
+</body>
+</html>
